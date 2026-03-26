@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>2026 경남 타운홀 미팅 (서부권)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      background: #fff0f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;        /* ← center → flex-start */
+      min-height: 100vh;
+      overflow-y: auto;               /* ← 스크롤 허용 */
+      padding: 40px 16px;             /* ← 상하 여백 */
+    }
+
+    /* ── 벚꽃 꽃잎 ── */
+    .petals-container {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .petal {
+      position: absolute; top: -40px;
+      background: radial-gradient(ellipse at 30% 30%, #fff0f5, #ffb7c5 60%, #ff85a1);
+      border-radius: 150% 0 150% 0;
+      opacity: 0.85; animation: fall linear infinite;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0.9; }
+      100% { transform: translateY(110vh) rotate(360deg) translateX(-20px); opacity: 0; }
+    }
+
+    /* ── 카드 공통 ── */
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(160deg, #fff8fa 0%, #fff0f5 40%, #ffe4ec 100%);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(255,130,170,0.25), inset 0 1px 0 rgba(255,255,255,0.9);
+      border: 1.5px solid rgba(255,182,204,0.5);
+      padding: 48px 32px 44px;
+      z-index: 10;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+
+    #page1 { display: flex; }
+    #page2 { display: none; }
+
+    /* ── 공통 요소 ── */
+    .top-flowers { font-size: 26px; margin-bottom: 12px; animation: sway 3s infinite; }
+    @keyframes sway { 0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)} }
+
+    .sub-title { font-size: 12px; color: #e07090; letter-spacing: 3px; margin-bottom: 8px; }
+
+    .main-title {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 22px; font-weight: 700; color: #c0336a;
+      margin-bottom: 6px; white-space: nowrap;
+    }
+
+    .divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, #ffb7c5, transparent);
+      margin: 16px auto;
+    }
+
+    .invite-text { font-size: 15px; color: #9b4f72; line-height: 1.9; margin-bottom: 10px; }
+    .invite-text strong { color: #c0336a; font-weight: 700; font-size: 17px; }
+
+    /* ── 시크릿 입력 ── */
+    .secret-area { margin-top: 16px; width: 100%; }
+    .secret-input-wrap { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .secret-input {
+      font-family: 'Gowun Dodum', sans-serif;
+      width: 170px; padding: 12px 16px;
+      border: 1.5px solid #ffb7c5; border-radius: 50px;
+      background: rgba(255,255,255,0.85); color: #c0336a;
+      font-size: 15px; text-align: center; outline: none;
+    }
+    .secret-input:focus { border-color: #ff7aaa; box-shadow: 0 0 0 3px rgba(255,122,170,0.2); }
+    .enter-btn {
+      font-family: 'Gowun Dodum', sans-serif;
+      padding: 12px 22px;
+      background: linear-gradient(135deg, #ff85a1, #e05580);
+      color: #fff; border: none; border-radius: 50px;
+      font-size: 14px; cursor: pointer;
+      box-shadow: 0 4px 15px rgba(224,85,128,0.35);
+    }
+    .enter-btn:hover { transform: translateY(-2px); }
+    .error-msg { display:none; color:#e05580; font-size:12px; margin-top:10px; }
+
+    /* ── PAGE 2 정보카드 ── */
+    .welcome-badge {
+      display: inline-block;
+      background: linear-gradient(135deg,#ffb7c5,#ff85a1);
+      color:#fff; font-size:11px; padding:5px 16px;
+      border-radius:50px; margin-bottom:14px;
+      box-shadow: 0 3px 10px rgba(255,130,170,0.3);
+    }
+
+    .info-cards { width:100%; display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+
+    .info-card {
+      background: rgba(255,255,255,0.8);
+      border: 1.5px solid rgba(255,182,204,0.5);
+      border-radius: 18px; padding: 14px 16px;
+      text-align: left; display: flex; gap: 12px;
+      box-shadow: 0 3px 12px rgba(255,150,180,0.1);
+    }
+
+    .info-icon { font-size: 22px; min-width: 30px; text-align: center; margin-top: 2px; }
+
+    .info-label { font-size: 10px; color: #e07090; font-weight: 700; margin-bottom: 3px; letter-spacing: 1px; }
+    .info-value { font-size: 14px; color: #7a2e4f; font-weight: 600; line-height: 1.5; }
+    .info-sub   { font-size: 12px; color: #b06080; margin-top: 2px; line-height: 1.5; }
+
+    .info-time {
+      display: inline-block;
+      background: #ffe4ec; color: #c0336a;
+      font-size: 11px; font-weight: bold;
+      padding: 2px 8px; border-radius: 4px; margin-bottom: 4px;
+    }
+
+    /* ── 지도 버튼 ── */
+    .map-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 8px; padding: 6px 14px;
+      background: #fff; border: 1.5px solid #ffb7c5;
+      border-radius: 50px; color: #e05580;
+      font-size: 12px; font-family: 'Gowun Dodum', sans-serif;
+      text-decoration: none; transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(255,150,180,0.15);
+    }
+    .map-btn:hover { background: #ffe4ec; transform: translateY(-1px); }
+
+    /* ── 메뉴 태그 ── */
+    .menu-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .menu-tag {
+      background: linear-gradient(135deg,#ffe0ea,#ffc8d8);
+      color:#c0336a; font-size:11px; padding:3px 10px;
+      border-radius:50px; border:1px solid rgba(255,182,204,0.6);
+    }
+
+    /* ── 컨텐츠 리스트 ── */
+    .content-list { list-style:none; margin-top:4px; }
+    .content-list li {
+      font-size: 13px; color: #7a2e4f;
+      padding: 3px 0; display:flex; gap:6px; align-items: flex-start;
+    }
+    .content-list li::before { content:'🌸'; font-size:11px; margin-top:2px; }
+
+    /* ── 클로징 ── */
+    .closing-msg {
+      margin-top: 14px; font-size: 13px; color: #c0607a; line-height: 1.8;
+      padding: 14px 16px; width: 100%;
+      background: rgba(255,255,255,0.6);
+      border-radius: 16px; border: 1px dashed rgba(255,182,204,0.7);
+    }
+
+    .hint-text {
+      margin-top: 24px; font-size: 11px;
+      color: rgba(192,51,106,0.55); line-height: 1.7;
+    }
+
+    /* ── 모바일 최적화 ── */
+    @media (max-width: 480px) {
+      body { padding: 24px 12px; }
+      .card { padding: 40px 22px 36px; border-radius: 24px; }
+      .main-title { font-size: 20px; }
+      .invite-text { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="petals-container" id="petalsContainer"></div>
+
+<!-- ══ PAGE 1 ══ -->
+<div class="card" id="page1">
+  <div class="top-flowers">🌸 🌺 🌸</div>
+  <div class="sub-title">✦ Secret Invitation ✦</div>
+  <div class="main-title">2026 경남 타운홀 미팅</div>
+  <div class="divider"></div>
+
+  <div style="margin:14px 0; opacity:0.85;">
+    <svg width="200" height="80" viewBox="0 0 220 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 80 Q60 50 110 45 Q160 40 200 20" stroke="#d4a0b0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M110 45 Q120 30 130 15" stroke="#d4a0b0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M80 55 Q75 40 85 28" stroke="#d4a0b0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <g transform="translate(82,24)">
+        <ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#ffb7c5" transform="rotate(0)"/>
+        <ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#ffd1de" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#ffb7c5" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#ffd1de" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-7" rx="4.5" ry="7" fill="#ffb7c5" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="3" fill="#ffe066"/>
+      </g>
+      <g transform="translate(128,11)">
+        <ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ffc8d8" transform="rotate(0)"/>
+        <ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ffb7c5" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ffd1de" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ffb7c5" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ffc8d8" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="2.5" fill="#ffe066"/>
+      </g>
+      <g transform="translate(108,12)">
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#ffb7c5" transform="rotate(36)"/>
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#ffd1de" transform="rotate(108)"/>
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#ffb7c5" transform="rotate(180)"/>
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#ffc8d8" transform="rotate(252)"/>
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5.5" fill="#ffd1de" transform="rotate(324)"/>
+        <circle cx="0" cy="0" r="2.5" fill="#ffdd44"/>
+      </g>
+    </svg>
+  </div>
+
+  <p class="invite-text">
+    경남 서부권<br/>
+    <strong>운영팀 여신들</strong>을 위한<br/>
+    특별한 봄날의 초대입니다 🌷<br/><br/>
+    소중한 인연과 함께<br/>따뜻한 봄을 나눠요 ✨
+  </p>
+
+  <div class="secret-area">
+    <div style="margin-bottom:10px; color:#c0607a; font-size:13px;">🔐 시크릿 코드를 입력해주세요</div>
+    <div class="secret-input-wrap">
+      <input type="text" class="secret-input" id="secretInput"
+        placeholder="코드 입력" maxlength="10"
+        onkeydown="if(event.key==='Enter') checkCode()"/>
+      <button class="enter-btn" onclick="checkCode()">입장 🌸</button>
+    </div>
+    <div class="error-msg" id="errorMsg">💔 코드가 맞지 않아요. 다시 시도해주세요!</div>
+  </div>
+
+  <p class="hint-text">🤫 몰래 공유한 시크릿 코드를<br/>살짝 입력해주세요 🌸</p>
+</div>
+
+<!-- ══ PAGE 2 ══ -->
+<div class="card" id="page2">
+  <div class="top-flowers">🌸 🌺 🌸</div>
+  <div class="welcome-badge">✦ You're Invited ✦</div>
+  <div class="main-title">2026 경남 타운홀 미팅</div>
+  <div class="divider"></div>
+
+  <div class="info-cards">
+
+    <!-- 날짜 -->
+    <div class="info-card">
+      <div class="info-icon">📅</div>
+      <div class="info-content">
+        <div class="info-label">Date</div>
+        <div class="info-value">2026년 4월 9일 (목)</div>
+      </div>
+    </div>
+
+    <!-- 1부 미팅 -->
+    <div class="info-card">
+      <div class="info-icon">🏢</div>
+      <div class="info-content">
+        <div class="info-label">1부 · Town Hall Meeting</div>
+        <span class="info-time">16:30 ~</span>
+        <div class="info-value">더 하우스 갑을</div>
+      </div>
+    </div>
+
+    <!-- 2부 디너 -->
+    <div class="info-card">
+      <div class="info-icon">🍷</div>
+      <div class="info-content">
+        <div class="info-label">2부 · Dinner Party</div>
+        <span class="info-time">17:40 ~ 19:00</span>
+        <div class="info-value">더 하우스 갑을</div>
+        <div class="info-sub">경남 진주시 남강로 519</div>
+        <div class="menu-tags">
+          <span class="menu-tag">🍕 피자</span>
+          <span class="menu-tag">🍝 파스타</span>
+          <span class="menu-tag">🍷 와인</span>
+        </div>
+        <a href="https://map.naver.com/p/search/%EB%8D%94%ED%95%98%EC%9A%B0%EC%8A%A4%EA%B0%91%EC%9D%84/place/11637347?c=15.00,0,0,2,dh&isCorrectAnswer=true&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202603261723&locale=ko&svcName=map_pcv5&searchText=%EB%8D%94%ED%95%98%EC%9A%B0%EC%8A%A4%EA%B0%91%EC%9D%84"
+           target="_blank" class="map-btn">📍 네이버 지도 보기</a>
+      </div>
+    </div>
+
+    <!-- 컨텐츠 -->
+    <div class="info-card">
+      <div class="info-icon">💬</div>
+      <div class="info-content">
+        <div class="info-label">Contents</div>
+        <div class="info-value" style="margin-bottom:4px;">이런 시간이 준비되어 있어요</div>
+        <ul class="content-list">
+          <li>"효율적으로 일하는 문화" Q&A 세션</li>
+          <li>"우리의 하루" 영상 관람</li>
+          <li>캐쥬얼한 소통 간담회</li>
+          <li>봄날의 특별 만찬 🌸</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="closing-msg">
+    💐 소중한 여신분들과 함께<br/>
+    따뜻하고 특별한 봄날을 만들어가요!<br/>
+    <strong>참석을 진심으로 기다리고 있습니다 🌸</strong>
+  </div>
+
+  <p class="hint-text">🌸 2026 경남 타운홀 미팅 🌸</p>
+</div>
+
+<script>
+  /* 꽃잎 생성 */
+  const cont = document.getElementById('petalsContainer');
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.classList.add('petal');
+    const size = Math.random() * 10 + 10;
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      animation-duration:${Math.random()*6+5}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    cont.appendChild(p);
+  }
+
+  /* 시크릿 코드 */
+  function checkCode() {
+    const val = document.getElementById('secretInput').value.trim();
+    const err = document.getElementById('errorMsg');
+    if (val === '여신') {
+      document.getElementById('page1').style.display = 'none';
+      document.getElementById('page2').style.display = 'flex';
+      window.scrollTo(0, 0);
+    } else {
+      err.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
