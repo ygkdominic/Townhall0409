@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="세일즈 올인원">
 <link rel="apple-touch-icon" href="/icon-192.png">
 
-<title>26년 5월 현대자동차 Sales All-in-One</title>
+<title>26년 5월 현대자동차 경남지역본부 Sales All-in-One</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
 
@@ -1261,6 +1261,162 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
   display: flex; flex-direction: column; align-items: center;
 ">
 
+  <!-- ★ 카카오 인앱 안내 팝업 — 랜딩 내부 최상단에 삽입 ★ -->
+  <div id="kakao-guide-overlay" style="
+    display: none;
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0,0,0,0.65);
+    align-items: flex-end;
+    justify-content: center;
+  ">
+    <div style="
+      background: #fff;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 24px 44px;
+      width: 100%; max-width: 480px;
+      animation: sheetUp .3s ease;
+    ">
+      <!-- 핸들바 -->
+      <div style="width:36px;height:4px;background:#E0E0E0;
+        border-radius:2px;margin:0 auto 22px;"></div>
+
+      <!-- 타이틀 -->
+      <div style="font-size:20px;font-weight:900;color:#191F28;
+        margin-bottom:8px;text-align:center;">
+        📲 앱으로 설치하기
+      </div>
+      <div style="font-size:13px;color:#8B95A1;text-align:center;
+        margin-bottom:28px;line-height:1.65;">
+        카카오톡 안에서는 홈화면 설치가 불가해요<br>
+        아래 방법대로 외부 브라우저로 열어주세요
+      </div>
+
+      <!-- 안드로이드 안내 -->
+      <div id="kakao-android-guide" style="display:none;">
+        <div style="background:#F2F4F6;border-radius:16px;padding:18px 16px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:800;color:#3182F6;
+            letter-spacing:0.8px;margin-bottom:14px;">
+            🤖 안드로이드 (갤럭시) 사용자
+          </div>
+          <!-- STEP 1 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3182F6;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              오른쪽 위 <strong style="color:#3182F6;">⋯ 점 세 개</strong> 버튼을 탭하세요
+            </div>
+          </div>
+          <!-- STEP 2 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3182F6;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              <strong style="color:#3182F6;">"다른 앱으로 열기"</strong> 선택<br>
+              <span style="font-size:12px;color:#8B95A1;">또는 "Chrome으로 열기"</span>
+            </div>
+          </div>
+          <!-- STEP 3 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#00B493;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              브라우저에서 열리면<br>
+              <strong style="color:#00B493;">하단 "앱으로 추가" 탭</strong> ✅
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- iOS 안내 -->
+      <div id="kakao-ios-guide" style="display:none;">
+        <div style="background:#F2F4F6;border-radius:16px;padding:18px 16px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:800;color:#3182F6;
+            letter-spacing:0.8px;margin-bottom:14px;">
+            🍎 아이폰 사용자
+          </div>
+          <!-- STEP 1 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3182F6;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              하단 <strong style="color:#3182F6;">공유 버튼 □↑</strong> 을 탭하세요
+            </div>
+          </div>
+          <!-- STEP 2 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#3182F6;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              <strong style="color:#3182F6;">"Safari로 열기"</strong> 선택
+            </div>
+          </div>
+          <!-- STEP 3 -->
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:#00B493;
+              color:#fff;font-size:13px;font-weight:800;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+            <div style="font-size:14px;color:#191F28;font-weight:600;
+              line-height:1.55;padding-top:3px;">
+              Safari에서 하단<br>
+              <strong style="color:#00B493;">공유버튼 → "홈 화면에 추가"</strong> ✅
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 닫기 버튼 -->
+      <button onclick="closeKakaoGuide()" style="
+        width:100%;height:52px;
+        background:#F2F4F6;border:none;border-radius:14px;
+        font-size:15px;font-weight:700;color:#4E5968;
+        font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+        -webkit-tap-highlight-color:transparent;
+      ">나중에 할게요</button>
+    </div>
+  </div>
+
+  <script>
+  /* ════ 카카오 인앱 감지 — 랜딩 진입 즉시 실행 ════ */
+  (function() {
+    var ua = navigator.userAgent;
+    var isKakao = /KAKAOTALK/i.test(ua);
+
+    /* ★ 핵심: PWA 앱으로 실행 중이면 팝업 안 띄움 */
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                    || window.navigator.standalone === true;
+
+    if (!isKakao || isStandalone) return;
+
+    var isIOS = /iphone|ipad|ipod/i.test(ua);
+    var overlay = document.getElementById('kakao-guide-overlay');
+    var androidGuide = document.getElementById('kakao-android-guide');
+    var iosGuide    = document.getElementById('kakao-ios-guide');
+
+    if (isIOS) {
+      iosGuide.style.display = 'block';
+    } else {
+      androidGuide.style.display = 'block';
+    }
+
+    overlay.style.display = 'flex';
+  })();
+
+  function closeKakaoGuide() {
+    document.getElementById('kakao-guide-overlay').style.display = 'none';
+  }
+  </script>
+  <!-- ★ 카카오 팝업 끝 ★ -->
+
   <!-- 배경 장식 -->
   <div style="
     position: fixed; top:-120px; right:-80px;
@@ -1337,7 +1493,7 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
     line-height:1.35; letter-spacing:-0.5px;
     margin-bottom:8px;
     position:relative; z-index:1;
-  ">26년 5월 현대자동차<br><span style="color:#3182F6;">Sales All-in-One</span></h1>
+  ">26년 5월 현대자동차 경남지역본부<br><span style="color:#3182F6;">Sales All-in-One</span></h1>
 
   <!-- 서브텍스트 -->
   <p style="
@@ -1345,7 +1501,7 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
     font-weight:500; line-height:1.6;
     position:relative; z-index:1;
     margin:0;
-  ">차종별 판매조건 · 납기 · 판매팁 · 금융 프로모션 · 트레이드인을 한번에!</p>
+  ">차종별 판매조건 · 납기 · 판매팁 · 금융 프로모션 · 트레이드인을 한번에!<br>
 </div>
   
 
@@ -1654,7 +1810,7 @@ function pwaInstall() {
 
 <div class="hero">
   <div class="hero-eyebrow">📓 경남 카마스터 시크릿 노트 Ep.4</div>
-  <h1 class="hero-title">26년 5월 현대자동차<br><span class="ac">Sales All-in-One</span></h1>
+  <h1 class="hero-title">26년 5월 현대자동차 경남지역본부<br><span class="ac">Sales All-in-One</span></h1>
   <p class="hero-sub">차종별 판매조건 · 납기 · 판매팁 · 금융 프로모션 · 트레이드인을 한번에!</p>
 </div>
 
@@ -4628,9 +4784,7 @@ PANELS.summary=`
     <div class="car-hd-tags"><span class="ftag">전체요약</span><span class="ftag">현대</span><span class="ftag">제네시스</span></div>
   </div>
 </div>
-<div class="wbox" style="background:#E8F4FD;border-color:#1565C0;color:#1A237E;">
-  💡 <strong>사용법</strong> · ☰ 메뉴에서 차종 선택 후, 판매조건 카드를 탭하면 하단에서 예상 혜택이 자동 합산됩니다.
-</div>
+
 
 <!-- 경남지역본부 주요 공지사항 -->
 <div style="margin-bottom:18px;">
@@ -8859,6 +9013,24 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+    <!-- 기존 마지막 스크립트 (건드리지 마세요) -->
+    <script>
+    /* ── PWA Service Worker 등록 ── */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(reg) { console.log('SW 등록 완료:', reg.scope); })
+          .catch(function(err) { console.warn('SW 등록 실패:', err); });
+      });
+    }
+    </script>
+
+
+ 
+
+</body>
+</html>
 
 
 </body>
