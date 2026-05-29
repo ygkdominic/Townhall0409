@@ -1251,20 +1251,6 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
 </head>
 <body>
 
-<!-- ★ 임시 UA 디버깅 — 확인 후 삭제 ★ -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var ua = navigator.userAgent || '';
-    var d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:0;left:0;right:0;'
-      + 'background:red;color:white;font-size:11px;'
-      + 'padding:8px;z-index:99999;word-break:break-all;';
-    d.textContent = 'UA: ' + ua;
-    document.body.appendChild(d);
-  });
-</script>
-
-
 <!-- ════════════════════════════════
      랜딩 페이지 (암호 입력)
 ════════════════════════════════ -->
@@ -1400,71 +1386,160 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
   </div>
 
 <script>
-
-/* ════ 카카오 인앱 감지 — 즉시 실행 ════ */
+/* ════ 설치 안내 통합 로직 ════ */
 (function() {
   var ua = navigator.userAgent || '';
+  var isIOS     = /iphone|ipad|ipod/i.test(ua);
+  var isAndroid = /android/i.test(ua);
 
-  /* ★ 안드로이드/iOS 카카오 UA 패턴 */
-var isKakao = (
-  /KAKAOTALK/i.test(ua)        ||
-  /kakaocomment/i.test(ua)     ||
-  /kakaotalk/i.test(ua)        ||
-  /com\.kakao\.talk/i.test(ua) ||
-  /kakao/i.test(ua)
-);
-
-
-  /* ★ PWA 앱으로 실행 중이면 팝업 안 띄움 */
+  /* PWA 설치 상태면 모든 안내 생략 */
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches
                   || window.navigator.standalone === true;
+  if (isStandalone) return;
 
-  if (!isKakao || isStandalone) return;
-
-  var isIOS = /iphone|ipad|ipod/i.test(ua);
-
-  function showOverlay() {
-    var overlay      = document.getElementById('kakao-guide-overlay');
-    var androidGuide = document.getElementById('kakao-android-guide');
-    var iosGuide     = document.getElementById('kakao-ios-guide');
-
-    if (!overlay || !androidGuide || !iosGuide) {
-      /* DOM이 아직 준비 안 됐으면 재시도 */
-      setTimeout(showOverlay, 50);
-      return;
+  /* iOS: 기존 바텀시트 팝업 (카카오 인앱 여부 무관하게 Safari 미설치 환경 안내) */
+  if (isIOS) {
+    /* Safari에서 열린 경우 팝업 생략 (홈화면 추가 안내는 PWA 카드에서 처리) */
+    var isSafari = /safari/i.test(ua) && !/chrome/i.test(ua) && !/crios/i.test(ua);
+    if (!isSafari) {
+      /* 카카오/기타 인앱 → 기존 바텀시트 팝업 */
+      function showIOSOverlay() {
+        var overlay  = document.getElementById('kakao-guide-overlay');
+        var iosGuide = document.getElementById('kakao-ios-guide');
+        if (!overlay || !iosGuide) { setTimeout(showIOSOverlay, 100); return; }
+        iosGuide.style.display = 'block';
+        overlay.style.cssText = [
+          'display:flex','position:fixed','inset:0','z-index:10000',
+          'background:rgba(0,0,0,0.65)','align-items:flex-end','justify-content:center'
+        ].join('!important;') + '!important';
+      }
+      showIOSOverlay();
+      requestAnimationFrame(function(){ requestAnimationFrame(showIOSOverlay); });
     }
-
-    if (isIOS) {
-      iosGuide.style.display = 'block';
-    } else {
-      androidGuide.style.display = 'block';
-    }
-
-    /* ★ flex 강제 적용으로 display:none 덮어쓰기 */
-    overlay.style.cssText = [
-      'display:flex',
-      'position:fixed',
-      'inset:0',
-      'z-index:10000',
-      'background:rgba(0,0,0,0.65)',
-      'align-items:flex-end',
-      'justify-content:center'
-    ].join('!important;') + '!important';
+    return;
   }
 
-  /* DOM 파싱 직후 + 렌더링 사이클 완료 후 각각 실행 */
-  showOverlay();
-  requestAnimationFrame(function() {
-    requestAnimationFrame(showOverlay);
-  });
+  /* Android: beforeinstallprompt 발생 여부로 크롬/삼성인터넷 vs 인앱 구분 */
+  if (isAndroid) {
+    var _pwaPromptAndroid = null;
+    var _promptChecked    = false;
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      _pwaPromptAndroid = e;
+    });
+
+    function renderAndroidBanner() {
+      if (_promptChecked) return;
+      _promptChecked = true;
+
+      var banner = document.getElementById('android-install-banner');
+      if (!banner) return;
+
+      if (_pwaPromptAndroid) {
+        /* ✅ 크롬/삼성인터넷: 앱 설치 버튼 표시 */
+        banner.innerHTML =
+          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">' +
+            '<div style="width:46px;height:46px;border-radius:12px;flex-shrink:0;' +
+              'background:linear-gradient(135deg,#EBF3FF,#D6EAFF);' +
+              'display:flex;align-items:center;justify-content:center;font-size:22px;">📲</div>' +
+            '<div>' +
+              '<div style="font-size:13.5px;font-weight:800;color:#191F28;margin-bottom:3px;">앱으로 설치하기</div>' +
+              '<div style="font-size:11.5px;color:#8B95A1;font-weight:500;line-height:1.5;">' +
+                '홈 화면에 추가하면 앱처럼 빠르게 실행됩니다</div>' +
+            '</div>' +
+          '</div>' +
+          '<button id="android-pwa-btn" onclick="androidInstallPWA()" style="' +
+            'width:100%;height:52px;' +
+            'background:linear-gradient(135deg,#3182F6,#1B64DA);' +
+            'color:#fff;border:none;border-radius:14px;' +
+            'font-family:\'Noto Sans KR\',sans-serif;' +
+            'font-size:14px;font-weight:800;cursor:pointer;' +
+            'box-shadow:0 4px 14px rgba(49,130,246,0.32);' +
+            'display:flex;align-items:center;justify-content:center;gap:8px;' +
+            '-webkit-tap-highlight-color:transparent;' +
+          '">📲 &nbsp;홈 화면에 앱으로 추가하기</button>' +
+          '<div id="android-install-done" style="' +
+            'display:none;text-align:center;font-size:12px;font-weight:700;' +
+            'color:#00B493;padding:10px;background:#F0FFF9;border-radius:10px;margin-top:8px;' +
+          '">✅ 설치 완료! 아래에서 암호를 입력하세요.</div>';
+        banner.style.display = 'block';
+
+      } else {
+        /* ⚠️ 인앱 브라우저(카카오 등): 외부 브라우저로 열기 안내 */
+        banner.innerHTML =
+          '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
+            '<div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;' +
+              'background:linear-gradient(135deg,#FFF0F1,#FFE5E7);' +
+              'display:flex;align-items:center;justify-content:center;font-size:18px;">⚠️</div>' +
+            '<div>' +
+              '<div style="font-size:13px;font-weight:800;color:#191F28;margin-bottom:2px;">' +
+                '앱 설치를 위해 브라우저로 열어주세요</div>' +
+              '<div style="font-size:11.5px;color:#8B95A1;font-weight:500;">' +
+                '카카오톡 내에서는 홈화면 설치가 불가합니다</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="background:#F2F4F6;border-radius:14px;padding:16px;">' +
+            '<div style="font-size:11px;font-weight:800;color:#3182F6;' +
+              'letter-spacing:0.5px;margin-bottom:12px;">🤖 안드로이드 설치 방법</div>' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">' +
+              '<div style="width:24px;height:24px;border-radius:50%;background:#3182F6;' +
+                'color:#fff;font-size:11px;font-weight:800;' +
+                'display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>' +
+              '<div style="font-size:13px;color:#191F28;font-weight:600;line-height:1.5;padding-top:1px;">' +
+                '우측 상단 <strong style="color:#3182F6;">⋯ 점 세 개</strong> 버튼 탭</div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">' +
+              '<div style="width:24px;height:24px;border-radius:50%;background:#3182F6;' +
+                'color:#fff;font-size:11px;font-weight:800;' +
+                'display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>' +
+              '<div style="font-size:13px;color:#191F28;font-weight:600;line-height:1.5;padding-top:1px;">' +
+                '<strong style="color:#3182F6;">"다른 앱으로 열기"</strong> 선택<br>' +
+                '<span style="font-size:11px;color:#8B95A1;">Chrome 또는 삼성인터넷 선택</span></div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+              '<div style="width:24px;height:24px;border-radius:50%;background:#00B493;' +
+                'color:#fff;font-size:11px;font-weight:800;' +
+                'display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>' +
+              '<div style="font-size:13px;color:#191F28;font-weight:600;line-height:1.5;padding-top:1px;">' +
+                '브라우저에서 열리면<br>' +
+                '<strong style="color:#00B493;">하단 "앱으로 추가" 탭</strong> ✅</div>' +
+            '</div>' +
+          '</div>';
+        banner.style.display = 'block';
+      }
+    }
+
+    /* 500ms 대기 후 판단 (beforeinstallprompt 이벤트 수신 시간 확보) */
+    setTimeout(renderAndroidBanner, 500);
+  }
 
 })();
 
-function closeKakaoGuide() {
-  var overlay = document.getElementById('kakao-guide-overlay');
-  if (overlay) overlay.style.display = 'none';
+/* 앱 설치 실행 함수 */
+function androidInstallPWA() {
+  if (!window._pwaPromptRef) {
+    /* _pwaPromptRef가 없으면 전역에서 찾기 */
+    window._pwaPromptRef = window._pwaPromptAndroid;
+  }
+
+  /* IIFE 내부 변수 접근 불가 → 이벤트 재활용 */
+  var btn = document.getElementById('android-pwa-btn');
+  if (btn) {
+    btn.textContent = '설치 중...';
+    btn.style.opacity = '0.7';
+  }
+
+  /* beforeinstallprompt를 다시 트리거할 수 없으므로 수동 안내로 fallback */
+  alert('화면 하단 또는 브라우저 메뉴에서\n"홈 화면에 추가" 또는\n"앱 설치"를 선택해 주세요.');
+
+  if (btn) {
+    btn.textContent = '📲 홈 화면에 앱으로 추가하기';
+    btn.style.opacity = '1';
+  }
 }
 </script>
+
 
 
 
@@ -1559,6 +1634,18 @@ function closeKakaoGuide() {
 
   <!-- 콘텐츠 -->
   <div style="width:100%;max-width:480px;padding:0 16px 60px;position:relative;z-index:1;">
+
+<!-- ★ 안드로이드 설치 안내 배너 ★ -->
+<div id="android-install-banner" style="
+  display:none;
+  background:#FFFFFF;border-radius:20px;padding:18px 18px 16px;
+  margin-top:20px;
+  box-shadow:0 2px 14px rgba(0,0,0,0.04);
+  border:1px solid rgba(49,130,246,0.15);
+">
+  <!-- JS로 채워짐 -->
+</div>
+
 
     <!-- ① 암호 입력 카드 (위로) -->
     <div style="
@@ -1765,64 +1852,75 @@ function closeKakaoGuide() {
 </div>
 
 <script>
-/* ════ PWA 설치 버튼 로직 ════ */
-var _pwaPrompt = null;
+/* ════ PWA 설치 버튼 로직 (통합) ════ */
+var _globalPwaPrompt = null;
 
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-}
-function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
-}
-function showPwaCard() {
-  var c = document.getElementById('pwa-install-card');
-  if (c) c.style.display = 'block';
-}
-
-/* Android 크롬: 설치 프롬프트 이벤트 */
+/* beforeinstallprompt 전역 캡처 */
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
-  _pwaPrompt = e;
-  if (!isStandalone()) {
-    showPwaCard();
-    var btn = document.getElementById('pwa-install-btn');
-    if (btn) btn.style.display = 'flex';
-  }
+  _globalPwaPrompt = e;
 });
 
 /* 설치 완료 이벤트 */
 window.addEventListener('appinstalled', function() {
-  var btn = document.getElementById('pwa-install-btn');
-  var done = document.getElementById('pwa-already');
-  if (btn) btn.style.display = 'none';
+  var banner = document.getElementById('android-install-banner');
+  var done   = document.getElementById('android-install-done');
+  var btn    = document.getElementById('android-pwa-btn');
+  if (btn)  btn.style.display = 'none';
   if (done) done.style.display = 'block';
-  _pwaPrompt = null;
+  _globalPwaPrompt = null;
 });
 
-/* 페이지 로드 시 iOS 처리 */
+/* ── 전역 설치 함수 (버튼에서 호출) ── */
+function androidInstallPWA() {
+  if (!_globalPwaPrompt) {
+    alert('브라우저 메뉴 → "홈 화면에 추가" 또는 "앱 설치"를 선택해 주세요.');
+    return;
+  }
+  _globalPwaPrompt.prompt();
+  _globalPwaPrompt.userChoice.then(function(result) {
+    if (result.outcome === 'accepted') {
+      var btn  = document.getElementById('android-pwa-btn');
+      var done = document.getElementById('android-install-done');
+      if (btn)  btn.style.display = 'none';
+      if (done) done.style.display = 'block';
+    }
+    _globalPwaPrompt = null;
+  });
+}
+
+/* ── iOS Safari: 수동 안내 (기존 pwa-install-card 재활용) ── */
+function isIOSDevice() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+
 window.addEventListener('load', function() {
-  if (isStandalone()) return; /* 이미 설치됨 → 배너 숨김 */
-  if (isIOS()) {
-    showPwaCard();
-    var guide = document.getElementById('pwa-ios-guide');
-    if (guide) guide.style.display = 'block';
+  if (isStandaloneMode()) return;
+  if (isIOSDevice()) {
+    /* iOS Safari일 때만 기존 pwa-install-card 표시 */
+    var isSafari = /safari/i.test(navigator.userAgent)
+               && !/chrome/i.test(navigator.userAgent)
+               && !/crios/i.test(navigator.userAgent);
+    if (isSafari) {
+      var c = document.getElementById('pwa-install-card');
+      if (c) c.style.display = 'block';
+      var g = document.getElementById('pwa-ios-guide');
+      if (g) g.style.display = 'block';
+    }
   }
 });
 
-/* 설치 버튼 클릭 */
-function pwaInstall() {
-  if (!_pwaPrompt) return;
-  _pwaPrompt.prompt();
-  _pwaPrompt.userChoice.then(function(result) {
-    if (result.outcome === 'accepted') {
-      var btn = document.getElementById('pwa-install-btn');
-      var done = document.getElementById('pwa-already');
-      if (btn) btn.style.display = 'none';
-      if (done) done.style.display = 'block';
-    }
-    _pwaPrompt = null;
-  });
+/* 기존 pwaInstall 함수 유지 (혹시 다른 곳에서 호출 시) */
+function pwaInstall() { androidInstallPWA(); }
+function isIOS()        { return isIOSDevice(); }
+function isStandalone() { return isStandaloneMode(); }
+function showPwaCard()  {
+  var c = document.getElementById('pwa-install-card');
+  if (c) c.style.display = 'block';
 }
 </script>
 
