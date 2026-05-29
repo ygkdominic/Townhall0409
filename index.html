@@ -1385,22 +1385,33 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
     </div>
   </div>
 
-  <script>
-  /* ════ 카카오 인앱 감지 — 랜딩 진입 즉시 실행 ════ */
-  (function() {
-    var ua = navigator.userAgent;
-    var isKakao = /KAKAOTALK/i.test(ua);
+<script>
 
-    /* ★ 핵심: PWA 앱으로 실행 중이면 팝업 안 띄움 */
-    var isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                    || window.navigator.standalone === true;
+/* ════ 카카오 인앱 감지 — 즉시 실행 ════ */
+(function() {
+  var ua = navigator.userAgent || '';
 
-    if (!isKakao || isStandalone) return;
+  /* ★ 안드로이드/iOS 카카오 UA 패턴 */
+  var isKakao = /KAKAOTALK/i.test(ua) || /kakaocomment/i.test(ua);
 
-    var isIOS = /iphone|ipad|ipod/i.test(ua);
-    var overlay = document.getElementById('kakao-guide-overlay');
+  /* ★ PWA 앱으로 실행 중이면 팝업 안 띄움 */
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+
+  if (!isKakao || isStandalone) return;
+
+  var isIOS = /iphone|ipad|ipod/i.test(ua);
+
+  function showOverlay() {
+    var overlay      = document.getElementById('kakao-guide-overlay');
     var androidGuide = document.getElementById('kakao-android-guide');
-    var iosGuide    = document.getElementById('kakao-ios-guide');
+    var iosGuide     = document.getElementById('kakao-ios-guide');
+
+    if (!overlay || !androidGuide || !iosGuide) {
+      /* DOM이 아직 준비 안 됐으면 재시도 */
+      setTimeout(showOverlay, 50);
+      return;
+    }
 
     if (isIOS) {
       iosGuide.style.display = 'block';
@@ -1408,14 +1419,33 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
       androidGuide.style.display = 'block';
     }
 
-    overlay.style.display = 'flex';
-  })();
-
-  function closeKakaoGuide() {
-    document.getElementById('kakao-guide-overlay').style.display = 'none';
+    /* ★ flex 강제 적용으로 display:none 덮어쓰기 */
+    overlay.style.cssText = [
+      'display:flex',
+      'position:fixed',
+      'inset:0',
+      'z-index:10000',
+      'background:rgba(0,0,0,0.65)',
+      'align-items:flex-end',
+      'justify-content:center'
+    ].join('!important;') + '!important';
   }
-  </script>
-  <!-- ★ 카카오 팝업 끝 ★ -->
+
+  /* DOM 파싱 직후 + 렌더링 사이클 완료 후 각각 실행 */
+  showOverlay();
+  requestAnimationFrame(function() {
+    requestAnimationFrame(showOverlay);
+  });
+
+})();
+
+function closeKakaoGuide() {
+  var overlay = document.getElementById('kakao-guide-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+</script>
+
+
 
   <!-- 배경 장식 -->
   <div style="
