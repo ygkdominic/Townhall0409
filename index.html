@@ -8733,7 +8733,7 @@ function goCarFromSheet(id,name){
 /* ════════════════════════════════
    랜딩 페이지 — 암호 인증 함수
 ════════════════════════════════ */
-const LD_PW = 'rladudrhks'; /* ← 암호를 여기서 변경 */
+const LD_PW = 'hd2026'; /* ← 암호를 여기서 변경 */
 
 function ldTryEnter() {
   const pw = document.getElementById('ld-pw').value;
@@ -8741,15 +8741,15 @@ function ldTryEnter() {
   const btnEl = document.getElementById('ld-enter-btn');
 
   if (pw === LD_PW) {
-    /* 버튼 로딩 상태 */
+    /* ★ 인증 성공 → sessionStorage에 저장 */
+    sessionStorage.setItem('sales_auth', 'ok');
+
     btnEl.textContent = '인증 중...';
     btnEl.style.opacity = '0.8';
 
-    /* 성공 오버레이 표시 */
     const successEl = document.getElementById('ld-success');
     successEl.style.display = 'flex';
 
-    /* 1.2초 후 랜딩 페이지 숨기고 메인 앱 표시 */
     setTimeout(function () {
       document.getElementById('landing-page').style.display = 'none';
       successEl.style.display = 'none';
@@ -8757,7 +8757,6 @@ function ldTryEnter() {
     }, 1200);
 
   } else {
-    /* 오류 표시 */
     errEl.style.display = 'block';
     const pwInput = document.getElementById('ld-pw');
     pwInput.style.borderColor = '#F04452';
@@ -8789,6 +8788,15 @@ function ldTogglePw() {
     toggleBtn.textContent = '👁';
   }
 }
+
+/* ★ 페이지 로드 시 이미 인증된 경우 랜딩 페이지 건너뜀 */
+(function() {
+  if (sessionStorage.getItem('sales_auth') === 'ok') {
+    var landing = document.getElementById('landing-page');
+    if (landing) landing.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+})();
 
 /* 랜딩 페이지 로드 시 body 스크롤 잠금 */
 document.body.style.overflow = 'hidden';
