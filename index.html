@@ -2416,7 +2416,6 @@ function tblJ5(g,label36,label48){
   return `<div class="ppanel" id="pp-${g}-j5" data-g="${g}"><div class="scard">
   <div class="stitle"><span style="width:18px;height:18px;border-radius:5px;background:#F2F4F6;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">📌</span> 현장렌트사 특화 할부 (J5)</div>
 
-  <div class="new-box">🆕 <strong>현장렌트사 전용 차량반납 유예형 저금리</strong> — 표준형 대비 월 납입금 절감!</div>
   ${T(`<table class="rt"><thead><tr><th>기간</th><th class="th-n">일반(J5)</th></tr></thead>
   <tbody>
     <tr><td class="lb">24개월</td><td><span class="r1">${label36}</span></td></tr>
@@ -8735,7 +8734,7 @@ function goCarFromSheet(id,name){
 /* ════════════════════════════════
    랜딩 페이지 — 암호 인증 함수
 ════════════════════════════════ */
-const LD_PW = 'hd2026'; /* ← 암호를 여기서 변경 */
+const LD_PW = 'hd2026';
 
 function ldTryEnter() {
   const pw = document.getElementById('ld-pw').value;
@@ -8743,7 +8742,6 @@ function ldTryEnter() {
   const btnEl = document.getElementById('ld-enter-btn');
 
   if (pw === LD_PW) {
-    /* ★ 인증 성공 → sessionStorage에 저장 */
     sessionStorage.setItem('sales_auth', 'ok');
 
     btnEl.textContent = '인증 중...';
@@ -8755,7 +8753,7 @@ function ldTryEnter() {
     setTimeout(function () {
       document.getElementById('landing-page').style.display = 'none';
       successEl.style.display = 'none';
-      document.body.style.overflow = '';
+      document.body.style.overflow = '';  /* ✅ 스크롤 해제 */
     }, 1200);
 
   } else {
@@ -8791,17 +8789,18 @@ function ldTogglePw() {
   }
 }
 
-/* ★ 페이지 로드 시 이미 인증된 경우 랜딩 페이지 건너뜀 */
+/* ★ 핵심: 인증 여부에 따라 조건부로 overflow 처리 */
 (function() {
   if (sessionStorage.getItem('sales_auth') === 'ok') {
+    /* 이미 인증됨 → 랜딩 숨기고 스크롤 허용 */
     var landing = document.getElementById('landing-page');
     if (landing) landing.style.display = 'none';
-    document.body.style.overflow = '';
+    document.body.style.overflow = '';   /* ✅ 스크롤 허용 */
+  } else {
+    /* 미인증 → 랜딩 표시하고 스크롤 잠금 */
+    document.body.style.overflow = 'hidden';
   }
 })();
-
-/* 랜딩 페이지 로드 시 body 스크롤 잠금 */
-document.body.style.overflow = 'hidden';
 
 
 </script>
@@ -8820,16 +8819,43 @@ document.body.style.overflow = 'hidden';
 </div>
 
 <script>
+/* ════════════════════════════════
+   차종 탭 전환 함수 (VTab / PTab)
+════════════════════════════════ */
+function showVtab(g, t) {
+  document.querySelectorAll('.vtab[data-g="' + g + '"]').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.vpanel[data-g="' + g + '"]').forEach(function(panel) {
+    panel.classList.remove('active');
+  });
+  var activeBtn   = document.querySelector('.vtab[data-g="' + g + '"][data-t="' + t + '"]');
+  var activePanel = document.getElementById('vp-' + g + '-' + t);
+  if (activeBtn)   activeBtn.classList.add('active');
+  if (activePanel) activePanel.classList.add('active');
+}
+
+function showPtab(g, t) {
+  document.querySelectorAll('.ptab[data-g="' + g + '"]').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('.ppanel[data-g="' + g + '"]').forEach(function(panel) {
+    panel.classList.remove('active');
+  });
+  var activeBtn   = document.querySelector('.ptab[data-g="' + g + '"][data-t="' + t + '"]');
+  var activePanel = document.getElementById('pp-' + g + '-' + t);
+  if (activeBtn)   activeBtn.classList.add('active');
+  if (activePanel) activePanel.classList.add('active');
+}
+</script>
+
+<script>
 /* ── PWA Service Worker 등록 ── */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/sw.js')
-      .then(function(reg) {
-        console.log('SW 등록 완료:', reg.scope);
-      })
-      .catch(function(err) {
-        console.warn('SW 등록 실패:', err);
-      });
+      .then(function(reg) { console.log('SW 등록 완료:', reg.scope); })
+      .catch(function(err) { console.warn('SW 등록 실패:', err); });
   });
 }
 </script>
