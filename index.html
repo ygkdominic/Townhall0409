@@ -1251,6 +1251,20 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
 </head>
 <body>
 
+<!-- ★ 임시 UA 디버깅 — 확인 후 삭제 ★ -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var ua = navigator.userAgent || '';
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;right:0;'
+      + 'background:red;color:white;font-size:11px;'
+      + 'padding:8px;z-index:99999;word-break:break-all;';
+    d.textContent = 'UA: ' + ua;
+    document.body.appendChild(d);
+  });
+</script>
+
+
 <!-- ════════════════════════════════
      랜딩 페이지 (암호 입력)
 ════════════════════════════════ -->
@@ -1392,7 +1406,14 @@ hr.dv { border: none; border-top: 1px solid rgba(0,0,0,0.06); margin: 16px 0; }
   var ua = navigator.userAgent || '';
 
   /* ★ 안드로이드/iOS 카카오 UA 패턴 */
-  var isKakao = /KAKAOTALK/i.test(ua) || /kakaocomment/i.test(ua);
+var isKakao = (
+  /KAKAOTALK/i.test(ua)        ||
+  /kakaocomment/i.test(ua)     ||
+  /kakaotalk/i.test(ua)        ||
+  /com\.kakao\.talk/i.test(ua) ||
+  /kakao/i.test(ua)
+);
+
 
   /* ★ PWA 앱으로 실행 중이면 팝업 안 띄움 */
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches
